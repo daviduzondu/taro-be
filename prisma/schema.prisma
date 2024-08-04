@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator kysely {
+ provider = "prisma-kysely"
+
+ // Optionally provide a destination directory for the generated file
+ // and a filename of your choice
+ output       = "../src/db"
+ fileName     = "types.ts"
+ // Optionally generate runtime enums to a separate file
+ enumFileName = "enums.ts"
+}
+
+datasource db {
+ provider = "postgresql"
+ url      = env("DATABASE_URL")
+}
+
+model User {
+ id         String    @id @default(dbgenerated("gen_random_uuid()"))
+ firstName  String
+ lastName   String
+ phone      String
+ email      String    @unique
+ password   String
+ avatar_url String?
+ role       Role
+ events     Event[]
+ bookings   Booking[]
+ inquiries  Inquiry[]
+ reviews    Review[]
+ venues     Venue[]
+ createdAt  DateTime  @default(now())
+ updatedAt  DateTime  @default(now()) @updatedAt
+}
+
+model Otp {
+ id    String   @id @default(dbgenerated("gen_random_uuid()"))
+ token Int
+ email String
+ exp   DateTime
+}
+
+model Event {
+ id          String    @id @default(dbgenerated("gen_random_uuid()"))
+ title       String
+ description String?
+ location    String?
+ date        DateTime?
+ type        EventType
+ userId      String
+ user        User      @relation(fields: [userId], references: [id])
+ aiAssisted  Boolean   @default(false)
+ bookings    Booking[]
+ vendors     Vendor[]
+ createdAt   DateTime  @default(now())
+ updatedAt   DateTime  @default(now()) @updatedAt
+}
+
+model Venue {
+ id           String    @id @default(dbgenerated("gen_random_uuid()"))
+ name         String
+ location     String
+ capacity     Int
+ amenities    String[]
+ pricing      Float
+ availability Boolean   @default(true)
+ owner        User      @relation(fields: [ownerId], references: [id])
+ ownerId      String
+ images       String[]
+ bookings     Booking[]
+ inquiries    Inquiry[]
+ createdAt    DateTime  @default(now())
+ updatedAt    DateTime  @default(now()) @updatedAt
+}
+
+model Vendor {
+ id           String      @id @default(dbgenerated("gen_random_uuid()"))
+ name         String
+ serviceType  ServiceType
+ pricing      Float
+ availability Boolean     @default(true)
+ description  String
+ portfolio    String[]
+ reviews      Review[]
+ events       Event[]
+ bookings     Booking[]
+ createdAt    DateTime    @default(now())
+ updatedAt    DateTime    @default(now()) @updatedAt
+}
+
+model Booking {
+ id        String        @id @default(dbgenerated("gen_random_uuid()"))
+ eventId   String
+ event     Event         @relation(fields: [eventId], references: [id])
+ userId    String
+ user      User          @relation(fields: [userId], references: [id])
+ venueId   String?
+ venue     Venue?        @relation(fields: [venueId], references: [id])
+ vendorId  String?
+ vendor    Vendor?       @relation(fields: [vendorId], references: [id])
+ date      DateTime
+ status    BookingStatus
+ createdAt DateTime      @default(now())
+ updatedAt DateTime      @default(now()) @updatedAt
+}
+
+model Inquiry {
+ id      String @id @default(dbgenerated("gen_random_uuid()"))
+ message String
+ venueId String
+ venue   Venue  @relation(fields: [venueId], references: [id])
+ userId  String
+ user    User   @relation(fields: [userId], references: [id])
+
+ createdAt DateTime @default(now())
+ updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Review {
+ id        String   @id @default(dbgenerated("gen_random_uuid()"))
+ rating    Int
+ comment   String?
+ vendorId  String
+ vendor    Vendor   @relation(fields: [vendorId], references: [id])
+ userId    String
+ user      User     @relation(fields: [userId], references: [id])
+ createdAt DateTime @default(now())
+ updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum Role {
+ USER
+ ADMIN
+ VENDOR
+}
+
+enum EventType {
+ CONFERENCE
+ WEDDING
+ PARTY
+ CORPORATE_EVENT
+}
+
+enum ServiceType {
+ DJ
+ CATERER
+ PHOTOGRAPHER
+ DECORATOR
+}
+
+enum BookingStatus {
+ PENDING
+ CONFIRMED
+ CANCELLED
+}
