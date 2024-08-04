@@ -8,6 +8,7 @@ import { KyselyModule } from 'nestjs-kysely';
 import { PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 import { AuthModule } from './modules/auth/auth.module';
+import { VenuesModule } from './modules/venues/venues.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    VenuesModule,
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],

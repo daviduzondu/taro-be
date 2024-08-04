@@ -15,6 +15,8 @@ export type Booking = {
   vendorId: string | null;
   date: Timestamp;
   status: BookingStatus;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
 export type Event = {
   id: Generated<string>;
@@ -25,6 +27,8 @@ export type Event = {
   type: EventType;
   userId: string;
   aiAssisted: Generated<boolean>;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
 export type EventToVendor = {
   A: string;
@@ -35,13 +39,14 @@ export type Inquiry = {
   message: string;
   venueId: string;
   userId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
-export type Profile = {
+export type Otp = {
   id: Generated<string>;
-  firstName: string;
-  lastName: string;
-  phone: string | null;
-  userId: string;
+  token: number;
+  email: string;
+  exp: Timestamp;
 };
 export type Review = {
   id: Generated<string>;
@@ -49,12 +54,20 @@ export type Review = {
   comment: string | null;
   vendorId: string;
   userId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
 export type User = {
   id: Generated<string>;
+  firstName: string;
+  lastName: string;
+  phone: string;
   email: string;
   password: string;
+  avatar_url: string | null;
   role: Role;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
 export type Vendor = {
   id: Generated<string>;
@@ -64,6 +77,8 @@ export type Vendor = {
   availability: Generated<boolean>;
   description: string;
   portfolio: string[];
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
 export type Venue = {
   id: Generated<string>;
@@ -75,13 +90,15 @@ export type Venue = {
   availability: Generated<boolean>;
   ownerId: string;
   images: string[];
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
 };
 export type DB = {
   _EventToVendor: EventToVendor;
   Booking: Booking;
   Event: Event;
   Inquiry: Inquiry;
-  Profile: Profile;
+  Otp: Otp;
   Review: Review;
   User: User;
   Vendor: Vendor;

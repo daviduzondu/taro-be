@@ -8,12 +8,11 @@ import {
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
 import { RegisterUserDto } from './dtos/RegisterUserDto';
-import { Role } from '../../db/enums';
+import { Role } from '../../db/types/enums';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { LoginUserDto } from './dtos/loginUserDto';
 import { JwtService } from '@nestjs/jwt';
-// import { User } from '../../db/types';
 
 @Injectable()
 export class AuthService {

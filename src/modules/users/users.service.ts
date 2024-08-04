@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
 import { STATUS_CODES } from 'http';
+import { User } from '../../db/types/types';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +14,7 @@ export class UsersService {
       .selectAll()
       .where(entry, '=', value)
       .execute();
-    return data;
+    return data as User[];
   }
 
   async getUsers() {
