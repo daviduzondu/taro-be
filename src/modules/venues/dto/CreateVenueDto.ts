@@ -1,6 +1,5 @@
-import { ColumnType } from 'kysely';
-import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsBoolean,
   IsInt,
@@ -8,8 +7,6 @@ import {
   IsNumber,
   IsString,
   IsUrl,
-  IsUUID,
-  ValidateNested,
 } from 'class-validator';
 
 export class CreateVenueDto {
@@ -30,19 +27,10 @@ export class CreateVenueDto {
   pricing: number;
 
   @IsBoolean()
-  availability: ColumnType<false, false, false> | ColumnType<true, true, true>;
-
-  @IsUUID()
-  ownerId: string;
+  availability: boolean;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ImageUrl)
-  images: ImageUrl[];
-}
-
-class ImageUrl {
-  @IsString()
-  @IsUrl()
-  url: string;
+  @ArrayNotEmpty() // Ensures the array is not empty
+  @IsUrl({}, { each: true }) // Apply IsUrl validation to each element in the array
+  images: string[];
 }

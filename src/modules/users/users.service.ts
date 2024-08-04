@@ -1,8 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
-import { STATUS_CODES } from 'http';
-import { User } from '../../db/types/types';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +12,7 @@ export class UsersService {
       .selectAll()
       .where(entry, '=', value)
       .execute();
-    return data as User[];
+    return data;
   }
 
   async getUsers() {
@@ -22,7 +20,7 @@ export class UsersService {
 
     return {
       status: 'success',
-      status_code: STATUS_CODES['200'],
+      statusCode: HttpStatus.OK,
       data,
     };
   }

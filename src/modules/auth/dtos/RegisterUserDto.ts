@@ -1,10 +1,13 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
+  IsNotIn,
   IsString,
   IsStrongPassword,
   MinLength,
 } from 'class-validator';
+import { Role } from '../../../db/types/enums';
 
 export class RegisterUserDto {
   @IsNotEmpty()
@@ -32,4 +35,11 @@ export class RegisterUserDto {
     },
   )
   password: string;
+
+  @IsNotIn(['ADMIN'], { message: 'Registering as an admin is not permitted' })
+  @IsEnum(Role, {
+    message: 'role must be on of the following values: USER or VENDOR',
+  })
+  @IsString()
+  role: Role;
 }

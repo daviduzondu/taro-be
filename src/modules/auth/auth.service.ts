@@ -31,7 +31,7 @@ export class AuthService {
     if (userExists)
       throw new ConflictException({
         status: 'error',
-        status_code: HttpStatus.CONFLICT,
+        statusCode: HttpStatus.CONFLICT,
         message: 'A user with this email already exists.',
       });
 
@@ -40,7 +40,7 @@ export class AuthService {
       role:
         registerUserDto.email === process.env.SUPER_ADMIN_EMAIL
           ? Role.ADMIN
-          : Role.USER,
+          : registerUserDto.role,
     });
 
     const insertOperationResponse = await this.db
@@ -51,7 +51,7 @@ export class AuthService {
 
     return {
       status: 'success',
-      status_code: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       data: insertOperationResponse,
     };
   }
@@ -65,7 +65,7 @@ export class AuthService {
     if (!user)
       throw new NotFoundException({
         status: 'error',
-        status_code: HttpStatus.NOT_FOUND,
+        statusCode: HttpStatus.NOT_FOUND,
         message: 'User does not exist',
       });
 
@@ -73,7 +73,7 @@ export class AuthService {
       throw new BadRequestException({
         status: 'error',
         message: 'Incorrect email or password',
-        status_code: HttpStatus.BAD_REQUEST,
+        statusCode: HttpStatus.BAD_REQUEST,
       });
 
     const token = this.jwtService.sign(user, {
@@ -84,7 +84,7 @@ export class AuthService {
       status: 'success',
       message: 'Login Successful',
       data: {
-        access_token: token,
+        accessToken: token,
         expires: new Date(Date.now() + 40 * 60 * 1000),
         ...user,
       },

@@ -64,7 +64,8 @@ export type User = {
   phone: string;
   email: string;
   password: string;
-  avatar_url: string | null;
+  avatarUrl: string | null;
+  banned: Generated<boolean | null>;
   role: Role;
   createdAt: Generated<Timestamp>;
   updatedAt: Generated<Timestamp>;
@@ -87,6 +88,7 @@ export type Venue = {
   capacity: number;
   amenities: string[];
   pricing: number;
+  blacklisted: Generated<boolean>;
   availability: Generated<boolean>;
   ownerId: string;
   images: string[];

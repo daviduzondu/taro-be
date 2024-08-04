@@ -9,6 +9,7 @@ import { PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 import { AuthModule } from './modules/auth/auth.module';
 import { VenuesModule } from './modules/venues/venues.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { VenuesModule } from './modules/venues/venues.module';
     UsersModule,
     AuthModule,
     VenuesModule,
+    JwtModule.register({ global: true }),
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],

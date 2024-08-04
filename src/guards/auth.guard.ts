@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException({
         status: 'error',
         message: 'Authorization token not provided',
-        status_code: HttpStatus.UNAUTHORIZED,
+        statusCode: HttpStatus.UNAUTHORIZED,
       });
 
     try {
@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
       if (this.isExpiredToken(payload))
         throw new UnauthorizedException({
           status: 'error',
-          status_code: HttpStatus.UNAUTHORIZED,
+          statusCode: HttpStatus.UNAUTHORIZED,
         });
       request['user'] = payload;
       request['token'] = token;
@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate {
       throw new BadRequestException({
         status: 'error',
         message: error.message,
-        status_code: HttpStatus.BAD_REQUEST,
+        statusCode: HttpStatus.BAD_REQUEST,
       });
     }
     return true;
