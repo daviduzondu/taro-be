@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
     if (!token)
       throw new UnauthorizedException({
         status: 'error',
-        message: 'Authorization token not provided',
+        message: ['Authorization token not provided'],
         statusCode: HttpStatus.UNAUTHORIZED,
       });
 
@@ -39,7 +39,7 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       throw new BadRequestException({
         status: 'error',
-        message: error.message,
+        message: [error.message],
         statusCode: HttpStatus.BAD_REQUEST,
       });
     }

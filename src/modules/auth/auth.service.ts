@@ -7,12 +7,13 @@ import {
 } from '@nestjs/common';
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
-import { RegisterUserDto } from './dtos/RegisterUserDto';
+import { RegisterUserDto } from './dto/RegisterUser.dto';
 import { Role } from '../../db/types/enums';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { LoginUserDto } from './dtos/loginUserDto';
+import { LoginUserDto } from './dto/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ExcludeSensitiveFields } from '../../utils/decorators/esf.decorator';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  @ExcludeSensitiveFields()
   async createUser(registerUserDto: RegisterUserDto) {
     const [userExists] = await this.userService.checkRecordExistence(
       'email',
@@ -32,7 +34,7 @@ export class AuthService {
       throw new ConflictException({
         status: 'error',
         statusCode: HttpStatus.CONFLICT,
-        message: 'A user with this email already exists.',
+        message: ['A user with this email already exists.'],
       });
 
     Object.assign(registerUserDto, {
@@ -51,11 +53,13 @@ export class AuthService {
 
     return {
       status: 'success',
-      statusCode: HttpStatus.OK,
+      statusCode: HttpStatus.CREATED,
+      message: ['Registration successful'],
       data: insertOperationResponse,
     };
   }
 
+  @ExcludeSensitiveFields()
   async loginWithEmailAndPassword(loginUserDto: LoginUserDto) {
     const [user] = await this.userService.checkRecordExistence(
       'email',
@@ -66,13 +70,13 @@ export class AuthService {
       throw new NotFoundException({
         status: 'error',
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'User does not exist',
+        message: ['User does not exist'],
       });
 
     if (!(await this.verifyPassword(loginUserDto.password, user.password)))
       throw new BadRequestException({
         status: 'error',
-        message: 'Incorrect email or password',
+        message: ['Incorrect email or password'],
         statusCode: HttpStatus.BAD_REQUEST,
       });
 
@@ -82,7 +86,8 @@ export class AuthService {
     });
     return {
       status: 'success',
-      message: 'Login Successful',
+      message: ['Login successful'],
+      statusCode: HttpStatus.OK,
       data: {
         accessToken: token,
         expires: new Date(Date.now() + 40 * 60 * 1000),
