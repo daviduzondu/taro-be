@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
-import { CreateVenueDto } from './dto/CreateVenueDto';
+import { CreateVenueDto } from './dto/venue.dto';
 import { Request } from 'express';
-import { User } from '../../db/types/kysesly';
+import { User } from '../../db/kysesly-types/kysesly';
 import { ExcludeSensitiveFields } from '../../utils/decorators/esf.decorator';
 
 @Injectable()
@@ -41,13 +41,13 @@ export class VenuesService {
     if (!data.length)
       throw new NotFoundException({
         status: 'error',
-        message: [`Venue with id ${id} not found`],
+        message: `Venue with id ${id} not found`,
         statusCode: HttpStatus.NOT_FOUND,
       });
 
     return {
       status: 'success',
-      message: ['Venue retrieved'],
+      message: 'Venue retrieved',
       statusCode: HttpStatus.OK,
       data,
     };

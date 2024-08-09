@@ -6,6 +6,10 @@
 # prisma
 migrations
 
+#DB
+generated
+kysesly-types
+
 # Logs
 logs
 *.log

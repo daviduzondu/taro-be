@@ -8,10 +8,10 @@ import {
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
 import { RegisterUserDto } from './dto/RegisterUser.dto';
-import { Role } from '../../db/types/enums';
+import { Role } from '../../db/kysesly-types/enums';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { LoginUserDto } from './dto/loginUser.dto';
+import { LoginUserDto } from './dto/LoginUser.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ExcludeSensitiveFields } from '../../utils/decorators/esf.decorator';
 
@@ -86,7 +86,6 @@ export class AuthService {
     });
     return {
       status: 'success',
-      message: ['Login successful'],
       statusCode: HttpStatus.OK,
       data: {
         accessToken: token,

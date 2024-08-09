@@ -1,54 +1,45 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterUserDto } from './dto/RegisterUser.dto';
-import { LoginUserDto } from './dto/loginUser.dto';
+import {
+  RegisterUserDto,
+  RegisterUserResponsePayload,
+} from './dto/RegisterUser.dto';
+import { LoginUserDto, LoginUserResponsePayload } from './dto/LoginUser.dto';
 import {
   ApiBody,
   ApiExtraModels,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response } from 'express';
-import {
-  GenericErrorResponse,
-  SuccessfulUserLogin,
-  SuccessfulUserRegistration,
-} from '../../types/responses';
-import {
-  _ApiResponse,
-  _BadRequestResponse,
-  _InternalServerErrorResponse,
-} from '../../utils/decorators/responses.decorator';
+import { CustomResponse } from '../../utils/decorators/custom-swagger-response.decorator';
+import { ResponseDtoWrapper } from '../../utils/dto/wrappers.dto';
 
 @ApiTags('Auth')
-@ApiExtraModels(GenericErrorResponse)
+@ApiExtraModels(
+  LoginUserResponsePayload,
+  ResponseDtoWrapper,
+  RegisterUserResponsePayload,
+)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @CustomResponse(
+    ResponseDtoWrapper,
+    RegisterUserResponsePayload,
+    HttpStatus.OK,
+  )
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: RegisterUserDto })
-  @_ApiResponse(201, 'User registration successful', SuccessfulUserRegistration)
-  @_BadRequestResponse()
-  @_InternalServerErrorResponse()
   @Post('register')
   registerWithEmailAndPassword(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.createUser(registerUserDto);
   }
 
-  @ApiOperation({
-    summary: 'Authenticate a user with their email and password',
-  })
-  @ApiBody({ type: LoginUserDto })
-  @_ApiResponse(200, 'Authentication successful', SuccessfulUserLogin)
-  @_BadRequestResponse()
-  @_InternalServerErrorResponse()
+  @CustomResponse(ResponseDtoWrapper, LoginUserResponsePayload, HttpStatus.OK)
   @Post('login')
-  loginWithEmailAndPassword(
-    @Body() loginUserDto: LoginUserDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    res.status(200);
+  @HttpCode(200)
+  loginWithEmailAndPassword(@Body() loginUserDto: LoginUserDto) {
     return this.authService.loginWithEmailAndPassword(loginUserDto);
   }
 }

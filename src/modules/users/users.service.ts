@@ -28,7 +28,7 @@ export class UsersService {
   }
 
   @ExcludeSensitiveFields()
-  async getUserVenues(userId: string) {
+  async getUserVenues(userId: string, page: number = 1, limit: number = 10) {
     const user = await this.checkRecordExistence('id', userId);
     if (![user])
       throw new NotFoundException({
@@ -41,12 +41,15 @@ export class UsersService {
       .selectFrom('Venue')
       .selectAll()
       .where('ownerId', '=', userId)
+      .limit(limit)
+      .offset((page - 1) * 10)
       .execute();
 
     return {
       status: 'success',
       message: [`Venues owned by ${userId} retrieved successfully`],
       data: data.map((entry) => ({ ...entry, owner: user })),
+      page,
     };
   }
 }

@@ -4,15 +4,23 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator kysely {
- provider = "prisma-kysely"
+generator nestjsDto {
+ provider                      = "prisma-generator-nestjs-dto"
+ output                        = "../src/db/generated"
+ classValidation               = "true"
+ prettier                      = "true"
+ createDtoPrefix               = "_Create"
+ updateDtoPrefix               = "_Update"
+ entityPrefix                  = "_"
+ exportRelationModifierClasses = "false"
+}
 
- // Optionally provide a destination directory for the generated file
- // and a filename of your choice
- output       = "../src/db/types"
+generator kysesly {
+ provider     = "prisma-kysely"
+ output       = "../src/db/kysesly-types/"
  fileName     = "kysesly.ts"
- // Optionally generate runtime enums to a separate file
  enumFileName = "enums.ts"
+ readOnlyIds  = true
 }
 
 datasource db {

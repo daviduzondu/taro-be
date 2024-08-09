@@ -7,10 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
       forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
     }),
   );
+
   app.setGlobalPrefix('api/v1', { exclude: ['docs'] });
   const config = new DocumentBuilder()
     .setTitle('Taro Backend')
