@@ -7,19 +7,32 @@ import {
   Get,
   Param,
   Query,
+  Put,
+  ParseUUIDPipe,
+  HttpCode,
+  Delete,
 } from '@nestjs/common';
-import { CreateVenueDto, VenueResponsePayload } from './dto/venue.dto';
+import {
+  CreateVenueDto,
+  UpdateVenueDto,
+  VenueResponsePayload,
+} from './dto/venue.dto';
 import { VenuesService } from './venues.service';
 import { AuthGuard } from '../../guards/auth.guard';
-import { Request } from 'express';
-import { User } from '../../db/kysesly-types/kysesly';
 import { UsersService } from '../users/users.service';
-import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiNoContentResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CustomResponse } from '../../utils/decorators/custom-swagger-response.decorator';
 import {
   ResponseDtoWrapper,
   PaginatedResponseDto,
 } from '../../utils/dto/wrappers.dto';
+import { RequireBodyPipe } from '../../pipes/require-body.pipe';
+import { AdminGuard } from '../../guards/admin.guard';
 
 @ApiExtraModels(VenueResponsePayload)
 @ApiTags('Venues')
@@ -47,15 +60,32 @@ export class VenuesController {
     return this.usersService.getUserVenues(userId, page, limit);
   }
 
-  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Add an event venue ' })
+  @UseGuards(AuthGuard, AdminGuard)
   @Post('create')
-  create(
-    @Body() createVenueDto: CreateVenueDto,
-    @Req() req: Request & { user: User },
+  create(@Body() createVenueDto: CreateVenueDto, @Req() req) {
+    return this.venuesService.createVenue(createVenueDto, req);
+  }
+
+  @ApiOperation({ summary: 'Update a event venue ' })
+  @UseGuards(AuthGuard, AdminGuard)
+  @Put('update/:id')
+  @CustomResponse(ResponseDtoWrapper, VenueResponsePayload, 200)
+  updateVenue(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(RequireBodyPipe) updateVenueDto: UpdateVenueDto,
   ) {
-    return this.venuesService.createVenue(
-      createVenueDto as CreateVenueDto,
-      req,
-    );
+    return this.venuesService.updateVenue(id, updateVenueDto);
+  }
+
+  @ApiOperation({ summary: 'Delete a venue by ID' })
+  @ApiNoContentResponse({
+    description: 'No content, successful deletion',
+  })
+  @UseGuards(AuthGuard, AdminGuard)
+  @HttpCode(204)
+  @Delete('delete/:id')
+  deleteVenue(@Param('id', ParseUUIDPipe) id: string) {
+    return this.venuesService.deleteVenue(id);
   }
 }

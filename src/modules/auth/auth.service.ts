@@ -32,7 +32,6 @@ export class AuthService {
 
     if (userExists)
       throw new ConflictException({
-        status: 'error',
         statusCode: HttpStatus.CONFLICT,
         message: ['A user with this email already exists.'],
       });
@@ -52,7 +51,6 @@ export class AuthService {
       .execute();
 
     return {
-      status: 'success',
       statusCode: HttpStatus.CREATED,
       message: ['Registration successful'],
       data: insertOperationResponse,
@@ -68,14 +66,12 @@ export class AuthService {
 
     if (!user)
       throw new NotFoundException({
-        status: 'error',
         statusCode: HttpStatus.NOT_FOUND,
         message: ['User does not exist'],
       });
 
     if (!(await this.verifyPassword(loginUserDto.password, user.password)))
       throw new BadRequestException({
-        status: 'error',
         message: ['Incorrect email or password'],
         statusCode: HttpStatus.BAD_REQUEST,
       });
@@ -85,7 +81,6 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
     });
     return {
-      status: 'success',
       statusCode: HttpStatus.OK,
       data: {
         accessToken: token,

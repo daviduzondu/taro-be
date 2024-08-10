@@ -21,7 +21,6 @@ export class UsersService {
     const data = await this.db.selectFrom('User').selectAll().execute();
 
     return {
-      status: 'success',
       statusCode: HttpStatus.OK,
       data,
     };
@@ -32,7 +31,6 @@ export class UsersService {
     const user = await this.checkRecordExistence('id', userId);
     if (![user])
       throw new NotFoundException({
-        status: 'error',
         message: [`User with id ${userId} does not exist`],
         statusCode: HttpStatus.NOT_FOUND,
       });
@@ -46,7 +44,6 @@ export class UsersService {
       .execute();
 
     return {
-      status: 'success',
       message: [`Venues owned by ${userId} retrieved successfully`],
       data: data.map((entry) => ({ ...entry, owner: user })),
       page,

@@ -43,6 +43,7 @@ model User {
  inquiries Inquiry[]
  reviews   Review[]
  venues    Venue[]
+ isDeleted Boolean   @default(false)
  createdAt DateTime  @default(now())
  updatedAt DateTime  @default(now()) @updatedAt
 }
@@ -66,6 +67,7 @@ model Event {
  aiAssisted  Boolean   @default(false)
  bookings    Booking[]
  vendors     Vendor[]
+ isDeleted   Boolean   @default(false)
  createdAt   DateTime  @default(now())
  updatedAt   DateTime  @default(now()) @updatedAt
 }
@@ -78,12 +80,17 @@ model Venue {
  amenities    String[]
  pricing      Float
  blacklisted  Boolean   @default(false)
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
  availability Boolean   @default(true)
  owner        User      @relation(fields: [ownerId], references: [id])
  ownerId      String
- images       String[]
+ imageUrls    String[]
  bookings     Booking[]
  inquiries    Inquiry[]
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
+ isDeleted    Boolean   @default(false)
  createdAt    DateTime  @default(now())
  updatedAt    DateTime  @default(now()) @updatedAt
 }
@@ -93,12 +100,17 @@ model Vendor {
  name         String
  serviceType  ServiceType
  pricing      Float
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
  availability Boolean     @default(true)
  description  String
  portfolio    String[]
  reviews      Review[]
  events       Event[]
  bookings     Booking[]
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
+ isDeleted    Boolean     @default(false)
  createdAt    DateTime    @default(now())
  updatedAt    DateTime    @default(now()) @updatedAt
 }
@@ -115,18 +127,23 @@ model Booking {
  vendor    Vendor?       @relation(fields: [vendorId], references: [id])
  date      DateTime
  status    BookingStatus
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
+ isDeleted Boolean       @default(false)
  createdAt DateTime      @default(now())
  updatedAt DateTime      @default(now()) @updatedAt
 }
 
 model Inquiry {
- id      String @id @default(dbgenerated("gen_random_uuid()"))
- message String
- venueId String
- venue   Venue  @relation(fields: [venueId], references: [id])
- userId  String
- user    User   @relation(fields: [userId], references: [id])
-
+ id        String   @id @default(dbgenerated("gen_random_uuid()"))
+ message   String
+ venueId   String
+ venue     Venue    @relation(fields: [venueId], references: [id])
+ userId    String
+ user      User     @relation(fields: [userId], references: [id])
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
+ isDeleted Boolean  @default(false)
  createdAt DateTime @default(now())
  updatedAt DateTime @default(now()) @updatedAt
 }
@@ -139,6 +156,9 @@ model Review {
  vendor    Vendor   @relation(fields: [vendorId], references: [id])
  userId    String
  user      User     @relation(fields: [userId], references: [id])
+ /// @DtoCreateOptional
+ /// @DtoUpdateOptional
+ isDeleted Boolean  @default(false)
  createdAt DateTime @default(now())
  updatedAt DateTime @default(now()) @updatedAt
 }

@@ -1,20 +1,16 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectKysely } from 'nestjs-kysely';
 import { Database } from '../../db/database';
-import { CreateVenueDto } from './dto/venue.dto';
-import { Request } from 'express';
-import { User } from '../../db/kysesly-types/kysesly';
+import { CreateVenueDto, UpdateVenueDto } from './dto/venue.dto';
 import { ExcludeSensitiveFields } from '../../utils/decorators/esf.decorator';
+import { CustomException } from '../../exceptions/custom.exception';
 
 @Injectable()
 export class VenuesService {
   constructor(@InjectKysely() private db: Database) {}
 
   @ExcludeSensitiveFields()
-  async createVenue(
-    createVenueDto: CreateVenueDto,
-    req: Request & { user: User },
-  ) {
+  async createVenue(createVenueDto: CreateVenueDto, req) {
     const data = await this.db
       .insertInto('Venue')
       .values({ ...createVenueDto, ownerId: req.user.id as any })
@@ -22,9 +18,7 @@ export class VenuesService {
       .execute();
 
     return {
-      status: 'success',
       statusCode: HttpStatus.CREATED,
-      message: ['Created a new Venue'],
       data,
     };
   }
@@ -36,20 +30,52 @@ export class VenuesService {
       .selectFrom('Venue')
       .selectAll()
       .where('id', '=', id)
-      .execute();
-
-    if (!data.length)
-      throw new NotFoundException({
-        status: 'error',
-        message: `Venue with id ${id} not found`,
-        statusCode: HttpStatus.NOT_FOUND,
+      .executeTakeFirstOrThrow(() => {
+        return new CustomException(
+          `Venue with id ${id} not found`,
+          HttpStatus.NOT_FOUND,
+        );
       });
 
     return {
-      status: 'success',
       message: 'Venue retrieved',
       statusCode: HttpStatus.OK,
       data,
     };
+  }
+
+  @ExcludeSensitiveFields()
+  async updateVenue(id: string, updateVenueDto: UpdateVenueDto) {
+    const data = await this.db
+      .updateTable('Venue')
+      .set(updateVenueDto)
+      .where('id', '=', id)
+      .returningAll()
+      .executeTakeFirstOrThrow(() => {
+        return new CustomException(
+          `Venue with id ${id} not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      });
+
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
+  }
+
+  async deleteVenue(id: string) {
+    await this.db
+      .updateTable('Venue')
+      .set({ isDeleted: true })
+      .where('id', '=', id)
+      .executeTakeFirstOrThrow(() => {
+        return new CustomException(
+          `Venue with id ${id} not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      });
+
+    return;
   }
 }

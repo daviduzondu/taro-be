@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponseDtoWrapper {
-  @ApiProperty({ example: 'success' })
-  status: string;
-
   @ApiProperty({ example: 200 })
   statusCode: number;
 }
